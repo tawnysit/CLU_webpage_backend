@@ -14,6 +14,8 @@ You must be a member of the Census of the Local Universe Caltech group on Fritz 
 The versions of various Python packages used in the development of this web application are specified in `requirements.txt`.
 
 ### Getting Started
+First, copy and paste your Fritz API access token as specified in `user_info.json`.
+
 After navigating to the main directory, simply run the application from the terminal/command prompt with the following command:
 
 `python sc.py -d [START DATE] -r [REFRESH DATE]`
