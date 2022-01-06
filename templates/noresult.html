@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block title %}{% endblock %}
+
+
+{% block head %}
+    {{ parent() }}
+    <style type="text/css">
+        .important { color: #22222; }
+    </style>
+{% endblock %}
+
+{% block content %}
+    {% block body %}
+    <h2 style='margin-left:1%'> All sources from ZTF - Caltech Census of the Local Universe (program_id:43) containing {{query}} </h2>
+    <hr/>
+    
+    <p style='text-align:center'>No results found in CLU catalog for query: {{query}}. Try again using the search bar or search on <a href="https://fritz.science/">Fritz</a>?</p>
+
+    {% endblock %}
+
+{% endblock %}

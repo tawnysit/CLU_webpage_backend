@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+
+
+{% block content %}
+    <h1 style='margin-left:1%'> ZTF Census of the Local Universe - Completeness (2021)</h1>
+    <hr>
+    <p style='margin-left:1%'> The figure below plots the cumulative completeness for all saved CLU sources as a function of apparent magnitude. The sources used are filtered to be brighter than -10 in absolute magnitude (this removes some non-SN sources such as nearby classical novae). Because our largest classification telescope, Keck I/LRIS, can only really observe targets brighter than ~21 apparent magnitude, we also only consider sources that meet that apparent magnitude cut. For the ZTF-II CLU experiment as of approximately May 2021, we now only assign spectroscopic follow-up to local (&lt150 Mpc), subluminous (peak below an absolute magnitude of -17) sources no more than 30 kpc from a CLU galaxy (the yellow line).</p>
+
+    <img style='display:block;margin-left:auto;margin-right:auto' src="{{ user_image }}" onerror="this.onerror=null; this.src='Default.jpg'" alt="">
+    <p></p>
+    <p style='margin-left:1%'> The table below presents classification success statistics by limiting magnitude for subluminous sources within the CLU volume (&lt150 Mpc), no more than 30 kpc from a CLU galaxy, and meeting the previously described magnitude cuts. In other words, the last row (Total) corresponds to the subluminous, &lt150 Mpc, &lt30kpc cumulative completeness shown in the above plot by the yellow line.</p>
+
+    <table border="1" style='margin-left:auto;margin-right:auto'>
+    <tr>
+    <th style="text-align:center;padding:5px"> Peak app. mag</th>
+    <th style="text-align:center;padding:5px"> ≤21 </th>
+    <th style="text-align:center;padding:5px"> ≤20.5</th>
+    <th style="text-align:center;padding:5px"> ≤20 </th>
+    <th style="text-align:center;padding:5px"> ≤19.5</th>
+    <th style="text-align:center;padding:5px"> ≤19</th>
+    <th style="text-align:center;padding:5px"> ≤18.5</th>
+    <th style="text-align:center;padding:5px"> ≤18</th>
+    <th style="text-align:center;padding:5px"> ≤17.5</th>
+    <th style="text-align:center;padding:5px"> ≤17</th>
+    <th style="text-align:center;padding:5px"> ≤16.5</th>
+    <th style="text-align:center;padding:5px"> ≤16</th>
+    <th style="text-align:center;padding:5px"> ≤15.5</th>
+    <th style="text-align:center;padding:5px"> ≤15</th>
+    </tr>
+    
+    {% for post in posts %}
+    <tr>
+        <td style="text-align:center;padding:5px;font-weight:bold"> {{post['Month']}}</td>
+        <td style="text-align:center;padding:5px"> {{post['21.0']}}</td>
+        <td style="text-align:center;padding:5px"> {{post['20.5']}}</td>
+        <td style="text-align:center;padding:5px"> {{post['20.0']}}</td>
+        <td style="text-align:center;padding:5px"> {{post['19.5']}}</td>
+        <td style="text-align:center;padding:5px"> {{post['19.0']}}</td>
+        <td style="text-align:center;padding:5px"> {{post['18.5']}}</td>
+        <td style="text-align:center;padding:5px"> {{post['18.0']}}</td>
+        <td style="text-align:center;padding:5px"> {{post['17.5']}}</td>
+        <td style="text-align:center;padding:5px"> {{post['17.0']}}</td>
+        <td style="text-align:center;padding:5px"> {{post['16.5']}}</td>
+        <td style="text-align:center;padding:5px"> {{post['16.0']}}</td>
+        <td style="text-align:center;padding:5px"> {{post['15.5']}}</td>
+        <td style="text-align:center;padding:5px"> {{post['15.0']}}</td>
+    </tr>
+    {% endfor %}
+
+    </table>
+
+    <br></br>
+
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <h3 style='margin-left:1%'> Interactive Figures </h3>
+    <hr>
+    <p style='margin-left:1%'> The interactive figures below show completeness for all candidates saved to CLU. On other words, points on these plots have not been filtered for distance (&lt150 Mpc), luminosity (below -17 in absolute magnitude), or CLU galaxy separation (within 30 kpc). Some of the luminous candidates not assigned for spectroscopic follow-up by CLU have been classified by other programs.</p>
+    {{ int_fig_1 }}
+    {{ int_fig_2 }}
+    {{ int_fig_3 }}
+
+{% endblock %}

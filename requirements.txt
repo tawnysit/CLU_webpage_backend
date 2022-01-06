@@ -1,0 +1,9 @@
+plotly==5.0.0
+Flask_SQLAlchemy==2.4.4
+numpy==1.20.2
+Flask==1.1.2
+natsort==7.0.1
+matplotlib==3.3.4
+tqdm==4.61.1
+astropy==4.2.1
+requests==2.25.1

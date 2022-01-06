@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+
+{% block title %}Welcome to the ZTF CLU{% endblock %}
+
+
+{% block head %}
+    {{ parent() }}
+    <style type="text/css">
+        .important { color: #22222; }
+    </style>
+{% endblock %}
+
+{% block content %}
+    <h1 style="text-align:center">Caltech ZTF-II Census of the Local Universe</h1>
+
+    <h3 style='margin-left:1%'> About the ZTF CLU Experiment:</h2>
+    <hr>
+    <p style='margin-left:1%'> The Zwicky Transient Faciility (ZTF) survey Census of the Local Universe (CLU) experiment is a volume and luminosity-limited supernova experiment.
+    </p>
+    <p style='margin-left:1%'> In ZTF-I, the CLU experiment was a volume-limited experiment, where all sources were found at less than 200 Mpc (z&lt0.05) and no further than 100-arcsec from galaxies found the the Census of the Local Universe galaxy catalog.
+    </p>
+    <p style='margin-left:1%'> The ZTF-II CLU experiment now is a volume-luminosity limited supernova sample. We attempt to save and classify all local (&lt150 Mpc / z&lt0.0331) SN that peak below an absolute magnitude of -17. We have also expanded the physical radius of the filter such that we try to save transients with a physical seperation less than 30 kpc from the CLU host galaxy (for z&gt0.01) and/or visible association with the host galaxy.
+    </p>
+
+    <img style='display:block;margin-left:auto;margin-right:auto' src="{{ user_image }}" onerror="this.onerror=null; this.src='Default.jpg'" alt="">
+
+    <h3 style='margin-left:1%'> ZTF CLU Literature </h2>
+    <hr>
+    <p style='margin-left:1%'> 1. De, K.; Kasliwal, M.; Tzanidakis, A. et al. The Zwicky Transient Facility Census of the Local Universe I: Systematic search for Calcium rich gap transients reveal three related spectroscopic sub-classes. Accepted to ApJ, 2020 <a href="https://arxiv.org/pdf/2004.09029.pdf">arXiv:2004.09029</a>
+    </p>
+
+
+    <h3 style='margin-left:1%'> Contributors </h3>
+    <hr>
+    <p style='margin-left:1%'> Kishalay De
+    <br> Mansi Kasliwal
+    <br> Anastasios Tzanidakis (<a href="mailto:atzanida@uw.edu">atzanida@uw.edu</a>)
+    <br> Tawny Sit (<a href="mailto:tsit@caltech.edu">tsit@caltech.edu</a>)
+    <br> Yuhan Yao
+    <br> Christoffer Fremling
+    <br>  </p>
+
+{% endblock %}
