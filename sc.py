@@ -122,7 +122,7 @@ def index():
         
     return render_template('index.html', user_image=full_filename_1)
 
-@app.route("/sources")
+@app.route("/sources", strict_slashes=False)
 def assignment():
     # Sort all Id's by the date
     saved_date = Time(CLU_dat['saved_date'], format='isot')
@@ -136,9 +136,9 @@ month_lst = ['January', 'February', 'March', 'April', 'May', 'June', 'July',
 # list of years
 year_lst = ['2021', '2022']
 
-@app.route("/sources/<any({}):segyear>/<any({}):segment>".format(str(year_lst)[1:-1], str(month_lst)[1:-1]))
+@app.route("/sources/<any({}):segyear>/<any({}):segment>".format(str(year_lst)[1:-1], str(month_lst)[1:-1]), strict_slashes=False)
 def monthly(segyear, segment):
-    """ Fetch and push all transients saved by the month argument"""
+    """ Fetch all transients saved by the month"""
     months_of_cand = []
     years_of_cand = []
     
@@ -164,9 +164,9 @@ def monthly(segyear, segment):
                     # render webpage
                     return (render_template('posts.html', month=segment, year=segyear, posts=CLU_at_that_month[::-1])) 
 
-@app.route("/sources/<any({}):segyear>".format(str(year_lst)[1:-1]))
+@app.route("/sources/<any({}):segyear>".format(str(year_lst)[1:-1]), strict_slashes=False)
 def yearly(segyear):
-    """ Fetch and push all transients saved by the year"""
+    """ Fetch all transients saved by the year"""
     years_of_cand = []
     
     for T in CLU_dat['saved_date']:
@@ -186,7 +186,7 @@ def yearly(segyear):
             return (render_template('posts.html', year=segyear, posts=CLU_at_that_year[::-1])) 
 
 
-@app.route("/sources/unclassified")
+@app.route("/sources/unclassified", strict_slashes=False)
 def assignment_focus():
     # Sort all Id's by the date
     saved_date = Time(CLU_dat['saved_date'], format='isot')
@@ -197,7 +197,7 @@ def assignment_focus():
 
     return render_template('notclf.html', posts=theta_2[::-1])
 
-@app.route("/completeness")
+@app.route("/completeness", strict_slashes=False)
 def completeness_stats():
     
     data = ascii.read(f"query_data/CLU_Query_{today.year}_{today.month}_{today.day}.ascii")
