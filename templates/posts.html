@@ -12,7 +12,9 @@
 {% block content %}
     {% block body %}
     {% if month %}
-        <h2 style='margin-left:1%'> {{month}} saved sources from ZTF - Caltech Census of the Local Universe (program_id:43)</h2>
+        <h2 style='margin-left:1%'> {{month}} {{year}} saved sources from ZTF - Caltech Census of the Local Universe (program_id:43)</h2>
+    {% elif year %}
+        <h2 style='margin-left:1%'> {{year}} saved sources from ZTF - Caltech Census of the Local Universe (program_id:43)</h2>
     {% elif query %}
         <h2 style='margin-left:1%'> All sources from ZTF - Caltech Census of the Local Universe (program_id:43) containing {{query}} </h2>
     {% else %}

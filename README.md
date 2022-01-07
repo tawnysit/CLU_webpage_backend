@@ -41,6 +41,7 @@ The refresh date also takes the string `all` as an argument. This will redownloa
 This web application was intitally developed by [Andy Tzanidakis](mailto:atzanida@uw.edu). 
 [Tawny Sit](mailto:tsit@caltech.edu) is the current maintainer and has made significant edits to the underlying code (eg. optimizing the efficiency of Fritz API calls, creation of the completeness table, and fine-tuning of sample selection parameters). 
 
-Currently: working on fixing the "All Sources Saved By Month" dropdown menu to accomodate 2022.
+Currently working on fixing the "All Sources Saved By Month" dropdown menu to accomodate 2022. 
+Direct links to individual months (eg. `http://127.0.0.1:4000/sources/2021/January`), or even a specific year (eg. `http://127.0.0.1:4000/sources/2021/` for all 2021 sources) are functional but cannot be accessed via the navbar yet.
 
 Other feature suggestions and bug reports are welcome!

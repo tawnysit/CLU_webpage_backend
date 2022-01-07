@@ -133,27 +133,57 @@ def assignment():
 # List of months of the year
 month_lst = ['January', 'February', 'March', 'April', 'May', 'June', 'July',
               'August', 'September', 'October', 'November', 'December']
+# list of years
+year_lst = ['2021', '2022']
 
-@app.route("/sources/<any({}):segment>".format(str(month_lst)[1:-1]))
-def monthy(segment):
+@app.route("/sources/<any({}):segyear>/<any({}):segment>".format(str(year_lst)[1:-1], str(month_lst)[1:-1]))
+def monthly(segyear, segment):
     """ Fetch and push all transients saved by the month argument"""
     months_of_cand = []
+    years_of_cand = []
+    
     for T in CLU_dat['saved_date']:
         mm = int(T.split('-')[1])
         months_of_cand.append(mm)
+        yyyy = int(T.split('-')[0])
+        years_of_cand.append(yyyy)
 
     months_of_cand = np.array(months_of_cand)
+    years_of_cand = np.array(years_of_cand)
+    
+    for yr in year_lst:
+        if yr==segyear:
+            for m0 in enumerate(month_lst):
+                ii, month_name = m0[0]+1, m0[1]
+                if month_name==segment:
+                    CLU_at_that_month = data[np.where((months_of_cand==ii) & (years_of_cand==int(yr)))]
 
-    for m0 in enumerate(month_lst):
-        ii, month_name = m0[0]+1, m0[1]
-        if month_name==segment:
-            CLU_at_that_month = CLU_dat[np.where(months_of_cand==ii)]
+                    # Sort by the date
+                    CLU_at_that_month = CLU_at_that_month[np.argsort(CLU_at_that_month['saved_date'])]
 
-            # Sort them by the date
-            CLU_at_that_month = CLU_at_that_month[np.argsort(CLU_at_that_month['saved_date'])]
+                    # render webpage
+                    return (render_template('posts.html', month=segment, year=segyear, posts=CLU_at_that_month[::-1])) 
 
-            #return (render_template(f'{segment}.html', posts=CLU_at_that_month[::-1]))
-            return (render_template('posts.html', month=segment, posts=CLU_at_that_month[::-1])) 
+@app.route("/sources/<any({}):segyear>".format(str(year_lst)[1:-1]))
+def yearly(segyear):
+    """ Fetch and push all transients saved by the year"""
+    years_of_cand = []
+    
+    for T in CLU_dat['saved_date']:
+        yyyy = int(T.split('-')[0])
+        years_of_cand.append(yyyy)
+
+    years_of_cand = np.array(years_of_cand)
+    
+    for yr in year_lst:
+        if yr==segyear:
+            CLU_at_that_year = data[np.where(years_of_cand==int(yr))]
+
+            # Sort by the date
+            CLU_at_that_year = CLU_at_that_year[np.argsort(CLU_at_that_year['saved_date'])]
+
+            # render webpage
+            return (render_template('posts.html', year=segyear, posts=CLU_at_that_year[::-1])) 
 
 
 @app.route("/sources/unclassified")
