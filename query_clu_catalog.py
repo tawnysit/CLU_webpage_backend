@@ -625,7 +625,7 @@ def QUERYME(date_query='2021-01-01', existing_query_file=None, force_refresh=Non
     for i in tqdm(range(len(names))):
         buff +=1
         if buff>=2: # feed to pool 2 sources a time - each source calls the API 3x and the rate limit is 5 calls per second
-            time.sleep(2) # sleep for a second just to be safe
+            time.sleep(4) # sleep for a bit just to be safe
             buff = 0 # restart buffer
 
         t = threading.Thread(target=query_CLU_dict, args=[names[i], dates[i]])
