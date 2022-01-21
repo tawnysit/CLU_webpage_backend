@@ -22,29 +22,30 @@ data = ascii.read(f"query_data/CLU_Query_{today.year}_{today.month}_{today.day}.
 def data_prep(data, key_id='peak_abs_mag'):
     X1, Y1, N1 = [], [], []
     X2, Y2, N2 = [], [], []
-    for ij in range(1, 13):
-        max_days = monthrange(2021, ij)[1]
-        T1 = Time(f"{2021}-{ij}-01")
-        T2 = Time(f"{2021}-{ij}-{max_days}")
+    for yy in [2021,2022]:
+        for ij in range(1, 13):
+            max_days = monthrange(yy, ij)[1]
+            T1 = Time(f"{yy}-{ij}-01")
+            T2 = Time(f"{yy}-{ij}-{max_days}")
 
-        w_n_clf = np.where((data['saved_date']>=T1) & (data['saved_date']<=T2)& (data['classification'].data.data=="0"))
-        w_clf = np.where((data['saved_date']>=T1) & (data['saved_date']<=T2) & (data['classification'].data.data!="0"))
+            w_n_clf = np.where((data['saved_date']>=T1) & (data['saved_date']<=T2)& (data['classification'].data.data=="0"))
+            w_clf = np.where((data['saved_date']>=T1) & (data['saved_date']<=T2) & (data['classification'].data.data!="0"))
 
-        if len(w_n_clf[0])>0:
-            for i in range(len(w_n_clf[0])):
-                #rand = np.random.normal(0, 0.09)
-                #X1.append(ij+rand)
-                X1.append(data[w_n_clf]['saved_date'][i])
-                Y1.append(data[w_n_clf][key_id][i])
-                N1.append(data[w_n_clf]['ZTF_id'][i])
-            for i in range(len(w_clf[0])):
-                #rand = np.random.normal(0, 0.09)
-                #X2.append(ij+rand)
-                X2.append(data[w_clf]['saved_date'][i])
-                Y2.append(data[w_clf][key_id][i])
-                N2.append(data[w_clf]['ZTF_id'][i])
-        else:
-            continue
+            if len(w_n_clf[0])>0:
+                for i in range(len(w_n_clf[0])):
+                    #rand = np.random.normal(0, 0.09)
+                    #X1.append(ij+rand)
+                    X1.append(data[w_n_clf]['saved_date'][i])
+                    Y1.append(data[w_n_clf][key_id][i])
+                    N1.append(data[w_n_clf]['ZTF_id'][i])
+                for i in range(len(w_clf[0])):
+                    #rand = np.random.normal(0, 0.09)
+                    #X2.append(ij+rand)
+                    X2.append(data[w_clf]['saved_date'][i])
+                    Y2.append(data[w_clf][key_id][i])
+                    N2.append(data[w_clf]['ZTF_id'][i])
+            else:
+                continue
     X1, Y1, N1 = np.array(X1), np.array(Y1), np.array(N1)
     X2, Y2, N2 = np.array(X2), np.array(Y2), np.array(N2)
 
