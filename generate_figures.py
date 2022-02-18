@@ -63,8 +63,8 @@ def figure_1(data, years=['2021', '2022']):
             N_total_sublum = len(w_special_sublum[0]) # total number of subluminous events
 
             # Luminosity & distance cut:
-            w_special_sublum_dcut = np.where((data['saved_date']>=T1) & (data['saved_date']<=T2) & (data['luminous_event']=="False") & (data['z']<=0.0331) & (data['clu_d_kpc']<=30) & (data['clu_d_host']<100)) # Mabs>=-17 & distance<=150Mpc & <=30kpc & within 100"
-            w_special_lum_dcut = np.where((data['saved_date']>=T1) & (data['saved_date']<=T2) & (data['luminous_event']=="True") & (data['z']<=0.0331) & (data['clu_d_kpc']<=30) & (data['clu_d_host']<100)) # Mabs<-17 & distance<=150Mpc & <=30kpc & within 100"
+            w_special_sublum_dcut = np.where((data['saved_date']>=T1) & (data['saved_date']<=T2) & (data['luminous_event']=="False") & (data['z']<=0.0331) & (data['clu_d_kpc']<=30) & np.logical_or(data['clu_d_host']<100, data['z']<0.01)) # Mabs>=-17 & distance<=150Mpc & <=30kpc & within 100" unless z<0.01
+            w_special_lum_dcut = np.where((data['saved_date']>=T1) & (data['saved_date']<=T2) & (data['luminous_event']=="True") & (data['z']<=0.0331) & (data['clu_d_kpc']<=30) & np.logical_or(data['clu_d_host']<100, data['z']<0.01)) # Mabs<-17 & distance<=150Mpc & <=30kpc & within 100" unless z<0.01
             N_total_lum_dcut = len(w_special_lum_dcut[0]) # total number of luminous & d<=150 Mpc
             N_total_sublum_dcut = len(w_special_sublum_dcut[0]) # total number of subluminous & d<=150 Mpc
 
@@ -159,11 +159,11 @@ def figure_2(data):
     data (astropy.Table): Astropy.Table that contains all important CLU information """
 
     # Query data: Conditions
-    sl_cq_1 = np.where((data['z']<0.05) & (data['luminous_event']=='False') & (data['clu_d_kpc']<=30) & (data['clu_d_host']<100)) # z<0.05(200 Mpc), 30Kpc/100" seperation, and is subluminous
-    sl_cq_2 = np.where((data['z']<=0.0331) & (data['luminous_event']=='False') & (data['clu_d_kpc']<=30) & (data['clu_d_host']<100)) # z<0.0331 (150 Mpc), 30Kpc/100" seperation, and is subluminous
+    sl_cq_1 = np.where((data['z']<0.05) & (data['luminous_event']=='False') & (data['clu_d_kpc']<=30) & np.logical_or(data['clu_d_host']<100, data['z']<0.01)) # z<0.05(200 Mpc), seperation<30kpc/100" if z>0.01, and is subluminous
+    sl_cq_2 = np.where((data['z']<=0.0331) & (data['luminous_event']=='False') & (data['clu_d_kpc']<=30) & np.logical_or(data['clu_d_host']<100, data['z']<0.01)) # z<0.0331(150 Mpc), seperation<30kpc/100" if z>0.01, and is subluminous
 
-    l_cq_1 = np.where((data['z']<0.05) & (data['luminous_event']=='True') & (data['clu_d_kpc']<=30) & (data['clu_d_host']<100)) # z<0.05(200 Mpc), 30Kpc/100" seperation, and is luminous
-    l_cq_2 = np.where((data['z']<=0.0331) & (data['luminous_event']=='True') & (data['clu_d_kpc']<=30) & (data['clu_d_host']<100)) # z<0.0331 (150 Mpc), 30Kpc/100" seperation, and is luminous
+    l_cq_1 = np.where((data['z']<0.05) & (data['luminous_event']=='True') & (data['clu_d_kpc']<=30) & np.logical_or(data['clu_d_host']<100, data['z']<0.01)) # z<0.05(200 Mpc), seperation<30kpc/100" if z>0.01, and is luminous
+    l_cq_2 = np.where((data['z']<=0.0331) & (data['luminous_event']=='True') & (data['clu_d_kpc']<=30) & np.logical_or(data['clu_d_host']<100, data['z']<0.01)) # z<0.0331(150 Mpc), seperation<30kpc/100" if z>0.01, and is luminous
 
     # Query data: CC
     sl_cc_1 = clu_cc(data, sl_cq_1) # subluminous CC 200 Mpc
@@ -210,11 +210,11 @@ def figure_3(data):
     data (astropy.Table): Astropy.Table that contains all important CLU information """
 
     # Query data: Conditions
-    sl_cq_1 = np.where((data['z']<0.05) & (data['luminous_event']=='False') & (data['clu_d_kpc']<=30) & (data['peak_abs_mag']<=-10) & (data['peak_app_mag']<=21)) # z<0.05(200 Mpc), 30Kpc seperation, and is subluminous
-    sl_cq_2 = np.where((data['z']<=0.0331) & (data['luminous_event']=='False') & (data['clu_d_kpc']<=30) & (data['peak_abs_mag']<=-10) & (data['peak_app_mag']<=21)) # z<0.0331 (150 Mpc), 30Kpc seperation, and is subluminous
+    sl_cq_1 = np.where((data['z']<0.05) & (data['luminous_event']=='False') & (data['clu_d_kpc']<=30) & (data['peak_abs_mag']<=-10) & (data['peak_app_mag']<=21) & np.logical_or(data['clu_d_host']<100, data['z']<0.01)) # z<0.05(200 Mpc), seperation<30kpc/100" if z>0.01, and is subluminous
+    sl_cq_2 = np.where((data['z']<=0.0331) & (data['luminous_event']=='False') & (data['clu_d_kpc']<=30) & (data['peak_abs_mag']<=-10) & (data['peak_app_mag']<=21) & np.logical_or(data['clu_d_host']<100, data['z']<0.01)) # z<0.0331(150 Mpc), seperation<30kpc/100" if z>0.01, and is subluminous
 
-    l_cq_1 = np.where((data['z']<0.05) & (data['luminous_event']=='True') & (data['clu_d_kpc']<=30) & (data['peak_abs_mag']<=-10) & (data['peak_app_mag']<=21)) # z<0.05(200 Mpc), 30Kpc seperation, and is subluminous
-    l_cq_2 = np.where((data['z']<=0.0331) & (data['luminous_event']=='True') & (data['clu_d_kpc']<=30) & (data['peak_abs_mag']<=-10) & (data['peak_app_mag']<=21)) # z<0.0331 (150 Mpc), 30Kpc seperation, and is subluminous
+    l_cq_1 = np.where((data['z']<0.05) & (data['luminous_event']=='True') & (data['clu_d_kpc']<=30) & (data['peak_abs_mag']<=-10) & (data['peak_app_mag']<=21) & np.logical_or(data['clu_d_host']<100, data['z']<0.01)) # z<0.05(200 Mpc), seperation<30kpc/100" if z>0.01, and is subluminous
+    l_cq_2 = np.where((data['z']<=0.0331) & (data['luminous_event']=='True') & (data['clu_d_kpc']<=30) & (data['peak_abs_mag']<=-10) & (data['peak_app_mag']<=21) & np.logical_or(data['clu_d_host']<100, data['z']<0.01)) # z<0.0331(150 Mpc), seperation<30kpc/100" if z>0.01, and is subluminous
 
     # Query data: CC
     sl_cc_1 = clu_cc(data, sl_cq_1) # subluminous CC 200 Mpc

@@ -141,7 +141,7 @@ def get_user_id(last_name, group_id=43):
     else:
         return (False)
 
-def get_source_photometry(ztfname, extrapolate_photometry=False):
+def get_source_photometry(ztfname):
     """ Fetch the photometry issued by ZTF for a given ZTF source.
     Params:
     -------

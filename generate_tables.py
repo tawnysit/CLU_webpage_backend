@@ -80,7 +80,7 @@ def cc_by_month(data, month_num=today.month, year_num=today.year):
         for m0 in enumerate(month_lst):
             ii, month_name = m0[0]+1, m0[1]
             CLU_in_month = data[np.where((cand_months==ii) & (cand_years==year))[0]]
-            mags, N_all, N_clf = clf_counting(CLU_in_month, np.where((CLU_in_month['in_clu']=='True') & (CLU_in_month['clu_d_kpc']<=30) & (CLU_in_month['peak_abs_mag']<=-10) & (CLU_in_month['peak_app_mag']<=21) & (CLU_in_month['clu_d_host']<100)))
+            mags, N_all, N_clf = clf_counting(CLU_in_month, np.where((CLU_in_month['in_clu']=='True') & (CLU_in_month['clu_d_kpc']<=30) & (CLU_in_month['peak_abs_mag']<=-10) & (CLU_in_month['peak_app_mag']<=21) & np.logical_or(CLU_in_month['clu_d_host']<100, CLU_in_month['z']<0.01)))
 
             if yy==0 and ii==1:
                 overall_N = N_all.copy()
