@@ -605,8 +605,9 @@ def QUERYME(date_query='2021-01-01', existing_query_file=None, force_refresh=Non
             refresh = np.where(dates>=refresh_date)[0]
             dates = dates[refresh]
             names = names[refresh]
+            refresh_remove =  np.where(Time(existing_data['saved_date'])>=refresh_date)
             
-            existing_data.remove_rows(refresh[refresh<len(existing_data)])
+            existing_data.remove_rows(refresh_remove)
         
         # just identify candidates not in the current catalog
         else:
