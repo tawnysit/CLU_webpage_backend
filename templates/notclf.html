@@ -13,9 +13,10 @@
     <h2 style='margin-left:1%'> Most recent saved and unclassified sources from ZTF - Caltech Census of the Local Universe (program_id:43)</h2>
     <hr/>
     <p style='margin-left:1%'> The sources listed below have been checked to be within the CLU volume (&lt150 Mpc) and subluminous (peak below an absolute magnitude of -17). They also have peak apparent magnitude brighter than 21.5 (fainter objects are not observable even with Keck I/LRIS). Most have been assigned spectroscopic followup, but are yet to be classified.
-    </br> For these sources, please double-check the physical separation from the CLU galaxy (within 30 kpc for z&gt0.01 and/or perform a visual check), subtractions, and reference images prior to observing.
-    </br> The peak absolute magnitude is provided to assist in identifaction of faint sources likely to be nearby nova and other non-SN phenomena that contaminate the CLU experiment completeness but may still be worth following up. 
-    </br> The z<sub>CLU</sub> column may be inaccurate for very nearby sources such as M31 or M33 where automatic cross-matching found a background galaxy farther away. Such cases were identified as sources with no redshift entry and a cross-matched CLU galaxy with a negative redshift. In these instances, the row is highlighted in <span style="color:#FF9999">light red</span> to indicate the unreliable redshift and quantities calculated from that redshift. Additionally, the peak absolute magnitude for these nearby sources is now calculated assuming a distance of 1 Mpc, slightly farther away than the usual nearby galaxy culprits M31 (~0.7-0.8 Mpc) and M33 (~0.8-0.9 Mpc).</p>
+    </br> Please double-check the physical separation from the CLU galaxy (within 30 kpc for z&gt0.01 and/or perform a visual check), subtractions, and reference images prior to observing.
+    </br> The peak absolute magnitude is provided to assist in identifaction of faint sources likely to be nearby nova and other non-SN phenomena that contaminate the CLU experiment completeness but may still be worth following up. Sources fainter than -10 in absolute magnitude are excluded from the completeness statistics and have their absolute magnitudes highlighted in <span style="color:#FF9999">light red</span>.
+    </br> The z<sub>CLU</sub> column may be inaccurate for very nearby sources such as M31 or M33 where automatic cross-matching found a background galaxy farther away. Such cases were identified as sources with no redshift entry and a cross-matched CLU galaxy with a negative redshift. In these instances, the row is highlighted in <span style="color:#FF9999">light red</span> to indicate the unreliable redshift and quantities calculated from that redshift. Additionally, the peak absolute magnitude for these nearby sources is now calculated assuming a distance of 1 Mpc, slightly farther away than the usual nearby galaxy culprits M31 (~0.7-0.8 Mpc) and M33 (~0.8-0.9 Mpc).
+    </br><span style="color:#99FF99">Green</span> columns indicate sources that are not marked with a classification on Fritz, but contain a comment suggesting that they may be LRN, ILRT, or LBV candidates.</p>
 
         <table border="1" style='margin-left:auto;margin-right:auto'>
         <tr>
@@ -41,14 +42,28 @@
           <td style="text-align:center;padding:5px">{{'%.1f'%post['last_mag']}} ({{post['last_filt']}})</td>
           <td style="text-align:center;padding:5px">{{'%.1f'%post['last_det']}}</td>  
         </tr>
-        {% else %}
-        <tr>
+        {% elif post['clf_merger']=='LRN' or post['clf_merger']=='ILRT' or post['clf_merger']=='LBV' %}
+        <tr style="background-color:#99FF99">
           <td style="text-align:center;;padding:5px"><a href="https://fritz.science/source/{{post['ZTF_id']}}">{{post['ZTF_id']}}</a></td>
           <td style="text-align:center;;padding:5px"> {{ post['saved_date'].split("T")[0] }} </td>
           <td style="text-align:center;padding:5px">{{ post['clu_d_host']}}"</td>
           <td style="text-align:center;padding:5px">{{'%.2f'%post['clu_d_kpc']}}</td>
           <td style="text-align:center;padding:5px">{{'%.5f'%post['z']}}</td>
           <td style="text-align:center;padding:5px">{{'%.1f'%post['peak_abs_mag']}}</td>    
+          <td style="text-align:center;padding:5px">{{'%.1f'%post['last_mag']}} ({{post['last_filt']}})</td>
+          <td style="text-align:center;padding:5px">{{'%.1f'%post['last_det']}}</td>  
+        {% else %}
+        <tr>
+          <td style="text-align:center;padding:5px"><a href="https://fritz.science/source/{{post['ZTF_id']}}">{{post['ZTF_id']}}</a></td>
+          <td style="text-align:center;padding:5px"> {{ post['saved_date'].split("T")[0] }} </td>
+          <td style="text-align:center;padding:5px">{{ post['clu_d_host']}}"</td>
+          <td style="text-align:center;padding:5px">{{'%.2f'%post['clu_d_kpc']}}</td>
+          <td style="text-align:center;padding:5px">{{'%.5f'%post['z']}}</td>
+          {% if post['peak_abs_mag']>-10 %}
+            <td style="text-align:center;padding:5px;background-color:#FF9999">{{'%.1f'%post['peak_abs_mag']}}</td>   
+          {% else %}
+            <td style="text-align:center;padding:5px">{{'%.1f'%post['peak_abs_mag']}}</td>    
+          {% endif %}
           <td style="text-align:center;padding:5px">{{'%.1f'%post['last_mag']}} ({{post['last_filt']}})</td>
           <td style="text-align:center;padding:5px">{{'%.1f'%post['last_det']}}</td>  
         </tr>

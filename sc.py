@@ -29,6 +29,8 @@ app.config['UPLOAD_FOLDER'] = os.path.join('static', 'figstables') # flask app c
 parser = argparse.ArgumentParser(description="ZTF-II CLU Scanning and Statistics")
 parser.add_argument('-d', '--date', type=str, help='add date from which to query argument -d YYYY-MM-DD or -d all; set to 2021-01-01 if no argument entered')
 parser.add_argument('-r', '--refresh', type=str, help='add force refresh from date -r YYYY-MM-DD or -r all; does not force refresh by default')
+parser.add_argument('--removedupes', default=True, action='store_true', help='remove duplicates from completeness plots (does not affect data download); removes duplicates by default')
+parser.add_argument('--no-removedupes', dest='removedupes', action='store_false')
 args = parser.parse_args()
 
 files = natsorted(os.listdir('query_data'))
@@ -63,8 +65,8 @@ if file:
                     _ = clu_cat.QUERYME(date_query='2021-01-01', existing_query_file=file, force_refresh=args.refresh)
                     
             CLU_dat = ascii.read(f"query_data/CLU_Query_{today.year}_{today.month}_{today.day}.ascii")
-            gf.main(CLU_dat) # generate updated figures
-            gt.table1(CLU_dat)
+            gf.main(CLU_dat, remove_duplicate=args.removedupes) # generate updated figures
+            gt.table1(CLU_dat, remove_duplicate=args.removedupes)
         
         else:
             CLU_dat = ascii.read(f"query_data/{file}")
@@ -88,8 +90,8 @@ if file:
         
         from interactive_figs import *
         CLU_dat = ascii.read(f"query_data/CLU_Query_{today.year}_{today.month}_{today.day}.ascii")
-        gf.main(CLU_dat)
-        gt.table1(CLU_dat)
+        gf.main(CLU_dat, remove_duplicate=args.removedupes)
+        gt.table1(CLU_dat, remove_duplicate=args.removedupes)
 
 # download data if no previous queries
 else:
@@ -102,8 +104,8 @@ else:
     
     from interactive_figs import *
     CLU_dat = ascii.read(f"query_data/CLU_Query_{today.year}_{today.month}_{today.day}.ascii")
-    gf.main(CLU_dat)
-    gt.table1(CLU_dat)
+    gf.main(CLU_dat, remove_duplicate=args.removedupes)
+    gt.table1(CLU_dat, remove_duplicate=args.removedupes)
 
 # clean up query and static data files older than 2 weeks
 del_old_files('query_data', save_days=14)
@@ -204,14 +206,18 @@ def completeness_stats():
     
     img_filename = os.path.join(app.config['UPLOAD_FOLDER'], f'CC_fig_with_magcuts_{today.year}-{today.month}-{today.day}.jpeg')
     if os.path.isfile(img_filename)==False: # if CC figure doesn't exist yet, render figure (for some reason plt.savefig breaks sometimes if I try to re-render every time...?)
-        gf.figure_3(data)
+        if args.removedupes==True:
+            dupes = data['classification']=='duplicate'
+            gf.figure_3(data[~dupes])
+        else:
+            gf.figure_3(data)
         img_filename = os.path.join(app.config['UPLOAD_FOLDER'], f'CC_fig_with_magcuts_{today.year}-{today.month}-{today.day}.jpeg')
     
     try:
         table_filename = os.path.join(app.config['UPLOAD_FOLDER'], f'CC_{today.year}-{today.month}-{today.day}.ascii')
         table_dat = ascii.read(table_filename, header_start=0)
     except:
-        gt.table1(data)
+        gt.table1(data, remove_duplicate=args.removedupes)
         table_filename = os.path.join(app.config['UPLOAD_FOLDER'], f'CC_{today.year}-{today.month}-{today.day}.ascii')
         table_dat = ascii.read(table_filename, header_start=0)
     

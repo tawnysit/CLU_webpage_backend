@@ -252,8 +252,11 @@ def figure_3(data):
     plt.savefig(f"static/figstables/CC_fig_with_magcuts_{today.year}-{today.month}-{today.day}.jpeg", format='jpeg', dpi=100, bbox_inches='tight')
     plt.close()
 
-def main(data):
+def main(data, remove_duplicate=True):
     """Generate & render figures"""
+    if remove_duplicate:
+        dupes = data['classification']=='duplicate'
+        data = data[~dupes]
     figure_1(data)
     figure_2(data)
     figure_3(data)

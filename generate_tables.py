@@ -110,7 +110,12 @@ def cc_by_month(data, month_num=today.month, year_num=today.year):
     
     return np.array(cc, dtype=object), mags
 
-def table1(data):
+def table1(data, remove_duplicate=True):
+    
+    if remove_duplicate:
+        dupes = data['classification']=='duplicate'
+        data = data[~dupes]
+        
     cc_data, mags = cc_by_month(data)
     
     cols = []

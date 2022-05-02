@@ -80,7 +80,7 @@ def get_all_sources(program_id, saved_after=None):
     program_id (int): program_id of your program (i.e 43 for Caltech Census of the Local Univese)
     """
     all_sources = []
-    num_per_page = 500
+    num_per_page = 50 # for some reason after 4/28/2022 the number of sources loaded per page got limited to 50?
     page = 1
     total_matches = None
     retry_attempts = 0
@@ -89,30 +89,55 @@ def get_all_sources(program_id, saved_after=None):
     if saved_after:
         date_query = Time(saved_after, format='isot')
         mainurl = BASEURL + f'api/sources?group_ids={program_id}&saveSummary=true&numPerPage={num_per_page}&savedAfter={date_query.isot}'
+        print(f'Loading sources saved after {date_query.iso} to Program {program_id}...')
     else:
         mainurl = BASEURL + f'api/sources?group_ids={program_id}&saveSummary=true&numPerPage={num_per_page}'
+        print(f'Loading sources saved to Program {program_id}...')
     
-    while retry_attempts <= max_retry_attempts:
-        url = mainurl + f'&pageNumber={page}'
-        response = api('GET',url)
+    if page==1:
+        while retry_attempts <= max_retry_attempts:
+            url = mainurl + f'&pageNumber={page}'
+            response = api('GET',url)
 
-        if response["status"] != "success":
-            print(response)  # log as appropriate
-            retry_attempts += 1
-            time.sleep(1)
-            continue
-        if retry_attempts != 0:
-            retry_attempts = 0
+            if response["status"] != "success":
+                print(data)  # log as appropriate
+                retry_attempts += 1
+                time.sleep(1)
+                continue
+            if retry_attempts != 0:
+                retry_attempts = 0
 
-        all_sources.extend(response["data"]["sources"])
-        total_matches = response['data']['total_matches']
-
-        print(f'Fetched {len(all_sources)}/{total_matches} sources.')
-
-        if len(all_sources) >= total_matches:
-            break
+            all_sources.extend(response["data"]["sources"])
+            total_matches = response['data']['total_matches']
+            page += 1
             
-        page += 1
+            if page>1:
+                break
+                
+    with tqdm(total=total_matches) as progbar: 
+        progbar.update(num_per_page)
+        time.sleep(2)
+        while retry_attempts <= max_retry_attempts:
+            url = mainurl + f'&pageNumber={page}'
+            response = api('GET',url)
+
+            if response["status"] != "success":
+                print(response)  # log as appropriate
+                retry_attempts += 1
+                time.sleep(1)
+                continue
+            if retry_attempts != 0:
+                retry_attempts = 0
+
+            all_sources.extend(response["data"]["sources"])
+
+            if len(all_sources) >= total_matches:
+                progbar.update(total_matches-((page-1)*num_per_page)) # update manually with number of sources on last page
+                break
+                
+            progbar.update(num_per_page)
+            page += 1
+            time.sleep(2) # since there are so many more pages to go through need to throttle the API calls
     
     return all_sources
 
@@ -458,6 +483,33 @@ def peak_mag_CLU(photometry):
             return (None, None)
     else:
         return (None, None)
+    
+def get_source_comments(ztfname):
+    url = BASEURL + f"api/sources/{ztfname}/comments"
+    response = api('GET', url)
+    return response['data']
+
+def check_stellar_merger(comments):
+    comment_times = np.array([Time(c['modified']).mjd for c in comments])
+    sort = np.argsort(comment_times)[::-1]
+    merger_comments = []
+    
+    for i in sort:
+        comment = comments[i]
+        comment_text = comment['text']
+        if 'LRN' in comment_text:
+            merger_comments.append('LRN')
+        elif 'ILRT' in comment_text:
+            merger_comments.append('ILRT')
+        elif 'LBV' in comment_text:
+            merger_comments.append('LBV')
+        else:
+            continue
+            
+    if len(merger_comments)>0:
+        return merger_comments[0]
+    else:
+        return ''
 
 def CLU_distances(z, distance_cut=150.):
     """
@@ -485,6 +537,22 @@ def CLU_distances(z, distance_cut=150.):
     else:
         return None, None
     
+"""
+removed this function since there's a dedicated classification option for duplicates now
+def check_duplicate(comments):
+    dupe = np.empty(len(comments), dtype=bool)
+    for i, comment in enumerate(comments):
+        comment_text = comment['text']
+        if 'duplicate' in comment_text:
+            dupe[i] = True
+        else:
+            dupe[i] = False
+    if np.sum(dupe)>=1:
+        return True
+    else:
+        return False
+"""
+    
 def query_CLU_dict(ZTF_name, saved_at):
     """
     This function will append the parameters of a given ZTF souce to the
@@ -509,17 +577,19 @@ def query_CLU_dict(ZTF_name, saved_at):
     luminous_event (str): if source is luminous or subluminous given a -17 luminosity cut
     """
     # Fetch source basic info
-    source_api_data = get_source_api(ZTF_name, comments=False)
+    source_api_data = get_source_api(ZTF_name, comments=True)
 
     # Fetch most recent classification
     clf = source_api_data['classifications']
     if clf:
         param_classification = clf[-1]['classification']
         param_prob = clf[-1]['probability']
+        param_stellar_merger_clf = ''
     else:
         #param_classification = None
         param_classification = ''
         param_prob = None
+        param_stellar_merger_clf = check_stellar_merger(source_api_data['comments'])
     
     # fetch ra/dec
     param_ra = source_api_data['ra']
@@ -577,7 +647,7 @@ def query_CLU_dict(ZTF_name, saved_at):
     db['source'].append({"ZTF_id": ZTF_name, "saved_date": saved_at,
                          "ra":param_ra, "dec":param_dec,
                          "z": param_z, "clu_d_host": param_clu_d, "nearby_flag": str(param_nearby),
-                         "classification": param_classification, "classification_prob": param_prob,
+                         "classification": param_classification, "classification_prob": param_prob, 'clf_merger': param_stellar_merger_clf,
                          "peak_abs_mag": param_peak_abs_mag, "in_clu":str(param_in_clu),
                          "luminous_event": str(param_luminous_event), "in_clu_vol": str(param_within_vol),
                          "peak_app_mag": param_peak_app_mag, 'peak_mag_filt':peak_filt, "clu_d_kpc":d0_kpc, "host_d_Mpc":dist_Mpc,
@@ -622,11 +692,13 @@ def QUERYME(date_query='2021-01-01', existing_query_file=None, force_refresh=Non
             dates = dates[new_entries]
             
     list_threads = [] # list of threads for pooling
-    buff = 1 # buffer time (NOTE: API sometimes crashes if request is to frequent) - start at 1 to account for query to load all sources in group
+    time.sleep(5) # querying all sources takes a lot of API calls now due to pagination, rest for 5s before starting to download source data
+    buff = 0 # buffer time
+    print('Fetching updated source data...')
     for i in tqdm(range(len(names))):
         buff +=1
         if buff>=2: # feed to pool 2 sources a time - each source calls the API 3x and the rate limit is 5 calls per second
-            time.sleep(4) # sleep for a bit just to be safe
+            time.sleep(5) # sleep for a bit just to be safe
             buff = 0 # restart buffer
 
         t = threading.Thread(target=query_CLU_dict, args=[names[i], dates[i]])
@@ -657,7 +729,7 @@ def QUERYME(date_query='2021-01-01', existing_query_file=None, force_refresh=Non
     else:
         param_names = ("ZTF_id", "saved_date", "ra", "dec", "z", 
                        "clu_d_host", "nearby_flag",
-                       "classification", "classification_prob", 
+                       "classification", "classification_prob", "clf_merger",
                        "peak_app_mag", "peak_mag_filt", "peak_abs_mag", "in_clu",
                        "luminous_event", "in_clu_vol", "clu_d_kpc", "host_d_Mpc",
                        "N_photometry_r", "N_photometry_g", "N_photometry_i",
