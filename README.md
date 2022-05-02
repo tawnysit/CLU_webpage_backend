@@ -37,6 +37,9 @@ For example, on 2022-01-05, one might run the following:
 
 The refresh date also takes the string `all` as an argument. This will redownload the most current data starting from the specified start date, and it is recommended to use this function to fully update the data for any analysis using the query files.
 
+### Source Duplicates
+Occasionally, duplicate sources are created through the ZTF pipeline (especially prevalent in April 2022). There is now a new classification taxonomy on Fritz used to mark these duplicates. Running `sc.py` now has the parameter `--removeduplicates` which removes any sources saved to CLU that have been marked as duplicates from completeness statistics and related plots (all sources saved to CLU meeting your query dates are downloaded regardless of their duplicate status). This setting is on by default. To keep duplicates in the completeness statistics/plots, include the parameter `--no-removeduplicates` when running `sc.py` from the terminal.
+
 ## Further Notes
 This web application was intitally developed by [Andy Tzanidakis](mailto:atzanida@uw.edu). 
 [Tawny Sit](mailto:tsit@caltech.edu) is the current maintainer and has made significant edits to the underlying code (eg. optimizing the efficiency of Fritz API calls, creation of the completeness table, and fine-tuning of sample selection parameters). 
